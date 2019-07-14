@@ -343,7 +343,6 @@ class profEdit(protoTypeDialog):
       self.form.editT1.setText('5')
       self.form.editT2.setText('5')
       self.form.editT3.setText('5')
-      self.form.labSelect.setText('')
       self.form.lineEdit.setText('')
   def shiftProfile (self,sect=None):
     if not sect:
