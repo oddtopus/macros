@@ -58,7 +58,7 @@
          </column>
          <column>
           <property name="text">
-           <string>load (N/m)</string>
+           <string>load (kN/m)</string>
           </property>
          </column>
         </widget>
@@ -75,12 +75,12 @@
          </column>
          <column>
           <property name="text">
-           <string>force X (N)</string>
+           <string>force X (kN)</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>force Y (N)</string>
+           <string>force Y (kN)</string>
           </property>
          </column>
         </widget>
@@ -124,28 +124,28 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Young modulus (N/m2)</string>
+          <string>Young modulus (N/mm2)</string>
          </property>
         </widget>
        </item>
        <item row="5" column="0">
         <widget class="QLineEdit" name="editI">
          <property name="placeholderText">
-          <string>section Inertia ()</string>
+          <string>section Inertia (mm4)</string>
          </property>
         </widget>
        </item>
        <item row="3" column="0">
         <widget class="QLineEdit" name="editA">
          <property name="placeholderText">
-          <string>section area (m2)</string>
+          <string>section area (mm2)</string>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLineEdit" name="editE">
          <property name="placeholderText">
-          <string>Young modulus (N/m2)</string>
+          <string>Young modulus (N/mm2)</string>
          </property>
         </widget>
        </item>
@@ -165,14 +165,14 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Section area (m2)</string>
+          <string>Section area (mm2)</string>
          </property>
         </widget>
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Section inertia (m4)</string>
+          <string>Section inertia (mm4)</string>
          </property>
         </widget>
        </item>

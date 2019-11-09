@@ -26,7 +26,7 @@
 #****************************************************************************
 
 from anastruct import SystemElements
-E=2.1e11 # N/m2 --- steel
+E=2.1e5 # N/mm2 --- steel
 X=FreeCAD.Vector(1,0,0)
 from PySide.QtCore import *
 from PySide.QtGui import *
@@ -80,22 +80,21 @@ class astructDialog(dodoDialogs.protoTypeDialog): #(object):
         self.form.btnTruss.setEnabled(True)
   def accept(self):
     try:
-      E=float(self.form.editE.text())
-      I=float(self.form.editI.text())
-      A=float(self.form.editA.text())
+      E=float(self.form.editE.text()) # N/mm2
+      I=float(self.form.editI.text()) # mm4
+      A=float(self.form.editA.text()) # mm2
       ss=SystemElements()
       frame=FreeCAD.ActiveDocument.getObjectsByLabel(self.form.comboBox.currentText())[0]
       sk=frame.Base
       j=0
-      print(self.combotypes)
       # CREATE MEMBERS OF STRUCTURE
       for l in sk.Geometry:
         sp=[i*1e-3 for i in list(l.StartPoint)[:2]]
         ep=[i*1e-3 for i in list(l.EndPoint)[:2]]
         if self.combotypes[j].currentText()=='beam': 
-          ss.add_element([sp,ep],EA=E*A,EI=E*I)
-        elif self.combotypes[j].currentText()=='truss': 
-          ss.add_truss_element([sp,ep],EA=E*A)
+          ss.add_element([sp,ep],EA=E*A*1e-3,EI=E*I*1e-9)
+        elif self.combotypes[j].currentText()=='brace': 
+          ss.add_truss_element([sp,ep],EA=E*A*1e-3)
         j+=1
       # SET DISTRIBUTED LOADS
       if self.form.radioFrame.isChecked():
@@ -103,7 +102,7 @@ class astructDialog(dodoDialogs.protoTypeDialog): #(object):
           if self.form.tableDistrib.item(i,2):
             item=self.form.tableDistrib.item(i,2)
             try:
-              load=float(item.text())
+              load=float(item.text()) # kN/m
               ss.q_load(element_id=(i+1), q=load)
             except:
               pass
@@ -116,9 +115,9 @@ class astructDialog(dodoDialogs.protoTypeDialog): #(object):
         # SET NODE FORCES
         if self.form.tableConc.item(i-1,1) or self.form.tableConc.item(i-1,2):
           itemX=self.form.tableConc.item(i-1,1)
-          try:    loadX=float(itemX.text())
+          try:    loadX=float(itemX.text()) # kN
           except: loadX=0
-          itemY=self.form.tableConc.item(i-1,2)
+          itemY=self.form.tableConc.item(i-1,2) # kN
           try:    loadY=float(itemY.text())
           except: loadY=0
           ss.point_load(node_id=(i), Fx=loadX, Fy=loadY)
@@ -147,14 +146,14 @@ class astructDialog(dodoDialogs.protoTypeDialog): #(object):
     if self.form.comboBox.currentText():
       frame=FreeCAD.ActiveDocument.getObjectsByLabel(self.form.comboBox.currentText())[0]
       sk=frame.Base
-      A=frame.Profile.Shape.Area*1e-6
-      I=frame.Profile.Shape.MatrixOfInertia.multiply(X).dot(X)*1e-12
+      A=frame.Profile.Shape.Area
+      I=frame.Profile.Shape.MatrixOfInertia.multiply(X).dot(X)
       ss=SystemElements()
       i=1
       for l in sk.Geometry:
         sp=[i*1e-3 for i in list(l.StartPoint)[:2]]
         ep=[i*1e-3 for i in list(l.EndPoint)[:2]]
-        ss.add_element([sp,ep],EA=E*A,EI=E*I)
+        ss.add_element([sp,ep],EA=E*A*1e-3,EI=E*I*1e-9)
         p2=FreeCAD.Placement()
         p2.Base=sk.Placement.multVec((l.StartPoint+l.EndPoint)/2)
         self.labNodes.append(label3D(pl=p2, color=(0,0.8,0), text='____beam'+str(i)))
@@ -176,7 +175,7 @@ class astructDialog(dodoDialogs.protoTypeDialog): #(object):
         item=QTableWidgetItem('%.1f m' %(sk.Geometry[i].length()/1000))
         self.form.tableDistrib.setItem(i,0,item)
         self.combotypes.append(QComboBox())
-        self.combotypes[-1].addItems(['beam','truss'])
+        self.combotypes[-1].addItems(['beam','brace'])
         self.form.tableDistrib.setCellWidget(i,1,self.combotypes[-1])
       #self.form. tableDistrib.setItem(0,1,QTableWidgetItem('1000')) #for test
       self.form.table_2.setRowCount(ss.id_last_node)
