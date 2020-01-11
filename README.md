@@ -1,5 +1,5 @@
 ## MACROS
-A collection of scripts, mostly in python, to perform common tasks (generallywithin FreeCAD).
+A collection of scripts, mostly in python, to perform common tasks (generally within FreeCAD).
 
 ## Installation
 Copy the desired macro file in a folder in your path.
@@ -16,4 +16,10 @@ To create and modify easily common 2D profiles for beams or other tasks.
 ![screenshot2](https://github.com/oddtopus/macros/blob/master/anastruct_fc/screenshot4.png)
 
 Integration in FreeCAD for the python module "anastruct". To draw forces/moment diagrams of planar structures with 2D loads.
+
+### 3) Path Ruler
+![screenshot2](https://github.com/oddtopus/macros/blob/master/pathRuler/prul-screenshot.png)
+
+A general purpose utility to measure distances on screen and convert it to the desired unit-per-pixel.
+It's written in python3/PyQt5 and it's executable independently.
 
