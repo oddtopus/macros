@@ -1,3 +1,6 @@
+# copyright 2019-2020
+# licence LGPL3 (https://github.com/oddtopus/macros/LICENSE
+
 import FreeCAD, FreeCADGui, Part, Draft
 from FreeCAD import Vector
 from PySide.QtCore import *
