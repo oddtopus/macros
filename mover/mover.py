@@ -43,19 +43,19 @@ class moverDialog(QtGui.QDialog):
         self.rbCenter.setText("center")
         self.rbNearest.setText("nearest")
         self.rbNone.setText("none")
-        self.label.setText("left-click on object to grab it\n"
-"Ctrl + move to hold the object\n"
-"Ctrl + left-click to drop the it")
+        self.label.setText("left-click to grab or drop object\n"
+"Ctrl + move to hold the object")
 
 import FreeCAD, FreeCADGui
 from os.path import join, dirname, abspath
 
-class moverForm(object): 
+class mover(object): 
   'prototype for dialogs.ui with callback function'
   def __init__(self):
     #dialogPath=join(dirname(abspath(__file__)),'moverDialog.ui')
-    self.form=moverDialog()#FreeCADGui.PySideUic.loadUi(dialogPath)
+    self.form=moverDialog() #FreeCADGui.PySideUic.loadUi(dialogPath)
     self.obj=None
+    self.release=False
     try:
       self.view=FreeCADGui.activeDocument().activeView()
       self.call=self.view.addEventCallback("SoMouseButtonEvent", self.action) # SoKeyboardEvents replaced by QAction'
@@ -70,8 +70,9 @@ class moverForm(object):
   def mouseActionB1(self,CtrlAltShift):
     v = FreeCADGui.ActiveDocument.ActiveView
     FreeCADGui.Selection.clearPreselection()
-    if CtrlAltShift[0]:
+    if self.release:#CtrlAltShift[0]:
       self.obj=None
+      self.release=False
       self.form.labObj.setText('---')
       try: 
         self.view.removeEventCallback("SoLocation2Event",self.callbackMove)
@@ -85,6 +86,7 @@ class moverForm(object):
         self.obj=FreeCAD.ActiveDocument.getObject(infos['Object'])
         self.form.labObj.setText(self.obj.Label)
         self.callbackMove = self.view.addEventCallback("SoLocation2Event",self.moveMouse)
+        self.release=True
   def mouseActionB2(self,CtrlAltShift):
     pass
   def mouseActionB3(self,CtrlAltShift):
@@ -94,38 +96,36 @@ class moverForm(object):
     self.form.labPos.setText('%.1f ,%.1f, %.1f' %tuple(point))
     ps=FreeCADGui.Selection.getPreselection()
     if not info['CtrlDown']:
-      if ps.ObjectName and ps.ObjectName!=self.obj.Name: 
-        if self.form.rbNearest.isChecked():
+      n1=self.obj.Placement.Rotation.multVec(FreeCAD.Vector(0.0,0.0,1.0)).normalize()
+      if self.form.rbNone.isChecked():
+        self.obj.Placement.Base = point
+      elif ps.ObjectName and ps.ObjectName!=self.obj.Name: 
+        if ps.SubElementNames[0][:6]=='Vertex':
+          self.obj.Placement.Base = ps.SubObjects[0].Point
+        elif self.form.rbNearest.isChecked():
           self.obj.Placement.Base = ps.PickedPoints[0] 
         elif self.form.rbCenter.isChecked():
           self.obj.Placement.Base = ps.SubObjects[0].CenterOfMass
         else:
           self.obj.Placement.Base = point
-        if not self.form.rbNone.isChecked():
-          #from fCmd import beamAx
-          n1=self.obj.Placement.Rotation.multVec(FreeCAD.Vector(0.0,0.0,1.0)).normalize()#beamAx(self.obj)
-          if ps.SubElementNames[0][:4]=='Face':
-            n2=ps.SubObjects[0].normalAt(0,0)
-            rot=FreeCAD.Rotation(n1,n2)
-            self.obj.Placement.Rotation=rot.multiply(self.obj.Placement.Rotation)
-          elif ps.SubElementNames[0][:4]=='Edge':
-            n1=ps.SubObjects[0].tangentAt(0)
-            rot=FreeCAD.Rotation(n1,n2)
-            self.obj.Placement.Rotation=rot.multiply(self.obj.Placement.Rotation)
-          elif ps.SubElementNames[0][:6]=='Vertex':
-            self.obj.Placement.Base = ps.SubObjects[0].Point
-      else:
-        self.obj.Placement.Base = point
+        if ps.SubElementNames[0][:4]=='Face':
+          n2=ps.SubObjects[0].normalAt(0,0)
+          rot=FreeCAD.Rotation(n1,n2)
+          self.obj.Placement.Rotation=rot.multiply(self.obj.Placement.Rotation)
+        elif ps.SubElementNames[0][:4]=='Edge':
+          n2=ps.SubObjects[0].tangentAt(0)
+          rot=FreeCAD.Rotation(n1,n2)
+          self.obj.Placement.Rotation=rot.multiply(self.obj.Placement.Rotation)
   def accept(self):
     pass
   def reject(self):
     'CAN be redefined to remove other attributes, such as arrow()s or label()s'
     try: self.view.removeEventCallback('SoMouseButtonEvent',self.call)
     except: pass
-    FreeCADGui.Control.closeDialog()
     try: self.view.removeEventCallback("SoLocation2Event",self.callbackMove)
     except:pass
+    FreeCADGui.Control.closeDialog()
     if FreeCAD.ActiveDocument: FreeCAD.ActiveDocument.recompute()
 
 
-FreeCADGui.Control.showDialog(moverForm())
+FreeCADGui.Control.showDialog(mover())
