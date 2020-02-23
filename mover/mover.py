@@ -26,11 +26,11 @@ class moverDialog(QtGui.QDialog):
         self.gridLayout = QtGui.QGridLayout(self.frame)
         self.rbCenter = QtGui.QRadioButton(self.frame)
         self.rbCenter.setChecked(True)
-        self.gridLayout.addWidget(self.rbCenter, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.rbCenter, 0, 1, 1, 1)
         self.rbNearest = QtGui.QRadioButton(self.frame)
-        self.gridLayout.addWidget(self.rbNearest, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.rbNearest, 1, 1, 1, 1)
         self.rbNone = QtGui.QRadioButton(self.frame)
-        self.gridLayout.addWidget(self.rbNone, 0, 2, 1, 1)
+        self.gridLayout.addWidget(self.rbNone, 0, 0, 2, 1)
         self.verticalLayout.addWidget(self.frame)
         self.label = QtGui.QLabel(self)
         self.label.setMinimumSize(QtCore.QSize(0, 50))
@@ -82,7 +82,7 @@ class mover(object):
     else:
       infos = v.getObjectInfo(v.getCursorPos())
       if infos and not self.obj:
-        print('pos=%i,%i,%i\nobj=%s/%s' %(infos['x'],infos['y'],infos['z'],infos['Object'],infos['Component']))
+        FreeCAD.Console.PrintMessage('pos=%i,%i,%i\nobj=%s/%s' %(infos['x'],infos['y'],infos['z'],infos['Object'],infos['Component']))
         self.obj=FreeCAD.ActiveDocument.getObject(infos['Object'])
         self.form.labObj.setText(self.obj.Label)
         self.callbackMove = self.view.addEventCallback("SoLocation2Event",self.moveMouse)
@@ -95,27 +95,40 @@ class mover(object):
     point=self.view.getPoint( *info['Position'] )
     self.form.labPos.setText('%.1f ,%.1f, %.1f' %tuple(point))
     ps=FreeCADGui.Selection.getPreselection()
+    n1=self.obj.Placement.Rotation.multVec(FreeCAD.Vector(0.0,0.0,1.0)).normalize()
+    n2=False
+    pos=self.obj.Placement.Base
     if not info['CtrlDown']:
-      n1=self.obj.Placement.Rotation.multVec(FreeCAD.Vector(0.0,0.0,1.0)).normalize()
-      if self.form.rbNone.isChecked():
+      if not self.form.rbNone.isChecked(): # anchor != none
+        if ps.ObjectName and ps.ObjectName!=self.obj.Name: 
+          if ps.SubElementNames[0][:6]=='Vertex': # vertex <=> move to point
+            self.obj.Placement.Base = ps.SubObjects[0].Point
+          elif ps.SubElementNames[0][:4]=='Face':  # face <=> move to surface and align to normal
+            if self.form.rbNearest.isChecked():
+              self.obj.Placement.Base = ps.PickedPoints[0] 
+            elif self.form.rbCenter.isChecked():
+              self.obj.Placement.Base = ps.SubObjects[0].CenterOfMass
+            n2=ps.SubObjects[0].normalAt(0,0) # orientation = normal
+            rot=FreeCAD.Rotation(n1,n2)
+            self.obj.Placement.Rotation=rot.multiply(self.obj.Placement.Rotation)
+          elif ps.SubElementNames[0][:4]=='Edge': # edge <=> ..
+            if self.form.rbNearest.isChecked():
+              self.obj.Placement.Base = ps.PickedPoints[0]
+              n2=ps.SubObjects[0].tangentAt(0)
+            elif self.form.rbCenter.isChecked():
+              if not ps.SubObjects[0].curvatureAt(0): # edge is straight
+                if hasattr(self.obj,'Height'):
+                  self.obj.Placement.Base = ps.SubObjects[0].CenterOfMass-n1.multiply(self.obj.Height/2)
+                else:
+                  self.obj.Placement.Base = ps.SubObjects[0].valueAt(0)+ps.SubObjects[0].tangentAt(0).multiply(float(ps.SubObjects[0].Length)/2)
+                n2=ps.SubObjects[0].tangentAt(0)
+              else:                                   # edge is curved
+                self.obj.Placement.Base = ps.SubObjects[0].centerOfCurvatureAt(0)
+                n2=ps.SubObjects[0].tangentAt(0).cross(ps.SubObjects[0].normalAt(0))
+            if n2: 
+              self.obj.Placement.Rotation=FreeCAD.Rotation(FreeCAD.Vector(0,0,1),n2)
+      else: #anchor==none
         self.obj.Placement.Base = point
-      elif ps.ObjectName and ps.ObjectName!=self.obj.Name: 
-        if ps.SubElementNames[0][:6]=='Vertex':
-          self.obj.Placement.Base = ps.SubObjects[0].Point
-        elif self.form.rbNearest.isChecked():
-          self.obj.Placement.Base = ps.PickedPoints[0] 
-        elif self.form.rbCenter.isChecked():
-          self.obj.Placement.Base = ps.SubObjects[0].CenterOfMass
-        else:
-          self.obj.Placement.Base = point
-        if ps.SubElementNames[0][:4]=='Face':
-          n2=ps.SubObjects[0].normalAt(0,0)
-          rot=FreeCAD.Rotation(n1,n2)
-          self.obj.Placement.Rotation=rot.multiply(self.obj.Placement.Rotation)
-        elif ps.SubElementNames[0][:4]=='Edge':
-          n2=ps.SubObjects[0].tangentAt(0)
-          rot=FreeCAD.Rotation(n1,n2)
-          self.obj.Placement.Rotation=rot.multiply(self.obj.Placement.Rotation)
   def accept(self):
     pass
   def reject(self):
