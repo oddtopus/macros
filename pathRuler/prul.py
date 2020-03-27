@@ -44,7 +44,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.actionSettings.triggered.connect(self.settings.show)
         self.menuActions.setTitle("Actions")
         self.menubar.addAction(self.menuActions.menuAction())
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        if sys.platform.startswith('win'):
+          self.setWindowOpacity(0.6)
+        else:
+          self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
     def mouseReleaseEvent(self,event):
         if event.button()==1:
             if self.ref:
