@@ -109,9 +109,11 @@ class mover(object):
             param1,param2=f.distToShape(Part.Vertex(P))[2][0][2] #
             if self.form.rbNearest.isChecked():
               self.obj.Placement.Base = ps.PickedPoints[0] 
+              n2=ps.SubObjects[0].normalAt(param1,param2) # orientation = normal
             elif self.form.rbCenter.isChecked():
-              self.obj.Placement.Base = ps.SubObjects[0].CenterOfMass
-            n2=ps.SubObjects[0].normalAt(param1,param2) #0,0) # orientation = normal
+              M=[ps.SubObjects[0].ParameterRange[1]/2, ps.SubObjects[0].ParameterRange[3]/2]
+              self.obj.Placement.Base = ps.SubObjects[0].valueAt(*M)
+              n2=ps.SubObjects[0].normalAt(*M) # orientation = normal
             rot=FreeCAD.Rotation(n1,n2)
             self.obj.Placement.Rotation=rot.multiply(self.obj.Placement.Rotation)
           elif ps.SubElementNames[0][:4]=='Edge': # edge <=> ..
