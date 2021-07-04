@@ -382,7 +382,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">
+          <iconset resource="imgages.qrc">
            <normaloff>:/images/square.png</normaloff>:/images/square.png</iconset>
          </property>
          <property name="iconSize">
@@ -420,7 +420,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">
+          <iconset resource="imgages.qrc">
            <normaloff>:/images/circle.png</normaloff>:/images/circle.png</iconset>
          </property>
          <property name="iconSize">
@@ -455,7 +455,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">
+          <iconset resource="imgages.qrc">
            <normaloff>:/images/T.png</normaloff>:/images/T.png</iconset>
          </property>
          <property name="iconSize">
@@ -490,7 +490,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">
+          <iconset resource="imgages.qrc">
            <normaloff>:/images/U.png</normaloff>:/images/U.png</iconset>
          </property>
          <property name="iconSize">
@@ -525,7 +525,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">
+          <iconset resource="imgages.qrc">
            <normaloff>:/images/H.png</normaloff>:/images/H.png</iconset>
          </property>
          <property name="iconSize">
@@ -560,7 +560,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">
+          <iconset resource="imgages.qrc">
            <normaloff>:/images/L.png</normaloff>:/images/L.png</iconset>
          </property>
          <property name="iconSize">
@@ -595,7 +595,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">
+          <iconset resource="imgages.qrc">
            <normaloff>:/images/Z.png</normaloff>:/images/Z.png</iconset>
          </property>
          <property name="iconSize">
@@ -630,7 +630,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">
+          <iconset resource="imgages.qrc">
            <normaloff>:/images/omega.png</normaloff>:/images/omega.png</iconset>
          </property>
          <property name="iconSize">
@@ -681,7 +681,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc">:/images/square.png</pixmap>
+         <pixmap resource="imgages.qrc">:/images/square.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -780,8 +780,9 @@
   <tabstop>tbOmega</tabstop>
  </tabstops>
  <resources>
-  <include location="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc"/>
-  <include location="../../../../Documenti/programmazione/QtDialogs/profileEditor/imgages.qrc"/>
+  <include location="imgages.qrc"/>
+  <include location="imgages.qrc"/>
+  <include location="imgages.qrc"/>
  </resources>
  <connections/>
 </ui>

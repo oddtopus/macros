@@ -79,14 +79,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def paintEvent(self,event):
         L=0
         painter=QtGui.QPainter(self)
-        painter.setPen(QtGui.QPen(QtCore.Qt.red,4,QtCore.Qt.DashLine))
         if len(self.points)>1 and self.ref:
             for i in list(range(len(self.points))):
                 if i:
                   P1,P2=self.points[i-1 : i+1]
+                  painter.setPen(QtGui.QPen(QtCore.Qt.red,4,QtCore.Qt.DashLine))
                   painter.drawLine(P1,P2)
+                  painter.setPen(QtGui.QPen(QtCore.Qt.yellow,1,QtCore.Qt.DotLine))
+                  painter.drawLine(P1,QtCore.QPoint(P1.x(),P2.y()))
+                  painter.drawLine(P1,QtCore.QPoint(P2.x(),P1.y()))
                   L+=sqrt((P1.x()-P2.x())**2+(P1.y()-P2.y())**2)*self.refL/self.ref
-            self.label.setText("Total Length = %.2f [%s]" %(L, self.um))
+                  dx=(P2.x()-P1.x())*self.refL/self.ref
+                  dy=(P1.y()-P2.y())*self.refL/self.ref
+            self.label.setText("Total Length = %.2f [%s] - Delta x-y = %.1f,%.1f" %(L, self.um, dx, dy))
 
 class Settings(QtWidgets.QDialog):
     def __init__(self,parent):

@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="images">
+    <file>Z.png</file>
+    <file>L.png</file>
+    <file>omega.png</file>
+    <file>square.png</file>
+    <file>T.png</file>
+    <file>U.png</file>
+    <file>H.png</file>
+    <file>circle.png</file>
+  </qresource>
+</RCC>
